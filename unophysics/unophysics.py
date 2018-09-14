@@ -1,12 +1,28 @@
 # -*- coding: utf-8 -*-
 """Main module."""
 
+import requests
+
 import struct
 import datetime
 import ftplib
 import glob
 import sys
 import os
+
+
+import sympy
+from IPython.display import Latex, Markdown, display
+
+
+def nbprint(string):
+    display(Markdown(string))
+
+lt = sympy.latex
+sympy.init_printing()
+def pmath(sym):
+    nbprint(f'${lt(sym)}$')
+
 '''
 *****
 EARS Class
@@ -71,17 +87,9 @@ def getEARSFileUNO(fn=None, outDir=''):
     try:
         Buoy = int(fn[-3:][:2])
         Disk = int(fn[-3:][2:])
-        ftp = ftplib.FTP('***REMOVED***')
+        ftp = ftplib.FTP('ftp.***REMOVED***')
         ftp.login(user='***REMOVED***', passwd='***REMOVED***')
-        if Buoy < 6:
-            directory = '/Volumes/FirstRAID/'
-        elif Buoy == 6 and Disk == 1:
-            directory = '/Volumes/FirstRAID/'
-        elif Buoy == 6 and Disk == 0:
-            directory = '/Volumes/FirstRAID/'
-        else:
-            directory = '/Volumes/SecondRAID/'
-        directory += 'Buoy{:0>2d}_DISK{:0>1d}'.format(Buoy, Disk)
+        directory = 'Buoy{:0>2d}{:0>1d}'.format(Buoy, Disk)
         ftp.cwd(directory)
         print(directory)
         fn_out = os.path.join(outDir, fn)
@@ -89,7 +97,7 @@ def getEARSFileUNO(fn=None, outDir=''):
                                   open(fn_out, 'wb').write)
         print(response)
         ftp.close()
-        return True
+        return fn_out
     except Exception as e:
         print(e)
         return False
@@ -119,7 +127,12 @@ def getEARSFileUL(fn=None, outDir=''):
                                   open(fn_out, 'wb').write)
         print(response)
         ftp.close()
-        return True
+        return fn_out
     except Exception as e:
         print(e)
         return False
+
+def searchEARS2017(searchData={}):
+    searchJson = {k: str(v) for k,v in searchData.items()}
+    r = requests.post('http://matlab.***REMOVED***/ull_detection_2017_available_data', json=searchJson)
+    return r.json()
