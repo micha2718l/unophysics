@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Main module."""
 
 import requests
 
@@ -11,17 +10,8 @@ import sys
 import os
 
 
-import sympy
-from IPython.display import Latex, Markdown, display
+__all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017']
 
-
-def nbprint(string):
-    display(Markdown(string))
-
-lt = sympy.latex
-sympy.init_printing()
-def pmath(sym):
-    nbprint(f'${lt(sym)}$')
 
 '''
 *****
