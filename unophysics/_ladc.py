@@ -8,10 +8,43 @@ import ftplib
 import glob
 import sys
 import os
-
+from sshtunnel import SSHTunnelForwarder
+import pymongo
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017']
 
+
+class ladcMongoDB():
+    
+    def __init__(self):
+        print('init')
+        SERVER_HOST = "***REMOVED***"
+        SERVER_USER = "***REMOVED***"
+        SERVER_PASS = "***REMOVED***"
+
+        self.server = SSHTunnelForwarder(
+            SERVER_HOST,
+            ssh_username=SERVER_USER,
+            ssh_password=SERVER_PASS,
+            remote_bind_address=('127.0.0.1', 27017)
+        )
+
+        self.server.start()
+
+        self.client = pymongo.MongoClient('127.0.0.1', self.server.local_bind_port) # server.local_bind_port is assigned local port
+        self.db = self.client.ladc
+
+    def __enter__(self):
+        print('entering')
+        return self.db
+    
+    def close(self):
+        self.client.close()
+        self.server.close()
+        
+    def __exit__(self, type, value, tb):
+        print('exiting')
+        self.close()
 
 '''
 *****
