@@ -11,13 +11,13 @@ import os
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 
-__all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017']
+__all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
+           'ladcMongoDB']
 
 
 class ladcMongoDB():
     
     def __init__(self):
-        print('init')
         SERVER_HOST = "uno.colorsynth.systems"
         SERVER_USER = "joseph"
         SERVER_PASS = "fourier"
@@ -35,7 +35,6 @@ class ladcMongoDB():
         self.db = self.client.ladc
 
     def __enter__(self):
-        print('entering')
         return self.db
     
     def close(self):
@@ -43,7 +42,6 @@ class ladcMongoDB():
         self.server.close()
         
     def __exit__(self, type, value, tb):
-        print('exiting')
         self.close()
 
 '''
