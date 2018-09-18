@@ -12,7 +12,7 @@ from sshtunnel import SSHTunnelForwarder
 import pymongo
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
-           'ladcMongoDB']
+           'ladcMongoDB', 'get', 'search']
 
 
 class ladcMongoDB():
@@ -157,3 +157,9 @@ def searchEARS2017(searchData={}):
     searchJson = {k: str(v) for k,v in searchData.items()}
     r = requests.post('http://matlab.***REMOVED***/ull_detection_2017_available_data', json=searchJson)
     return r.json()
+
+def search(searchData={}):
+    return searchEARS2017(searchData=searchData)
+
+def get(fn=None, outDir=''):
+    return getEARSFileUNO(fn=fn, outDir=outDir)
