@@ -55,7 +55,7 @@ class EARS():
     default_fn = r'../data/raw/5234C8C9.021'
     recN = 512
     headerN = 12
-    epoch = (2000, 1, 1)
+    epoch = (2017, 1, 1)
     fs = 192000
 
     def __init__(self, fn=None, epoch=None):
