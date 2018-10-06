@@ -9,8 +9,8 @@ def nbprint(string):
 
 lt = sympy.latex
 sympy.init_printing()
-def pmath(sym, ret=False):
-    output = f'${lt(sym)}$'
+def pmath(sym, ret=False, pre='', post='', preM='', postM=''):
+    output = f'{pre}${preM}{lt(sym)}{postM}${post}'
     if ret:
         return output
     nbprint(output)
