@@ -158,8 +158,15 @@ def searchEARS2017(searchData={}):
     r = requests.post('http://matlab.uno.colorsynth.systems/ull_detection_2017_available_data', json=searchJson)
     return r.json()
 
-def search(searchData={}):
-    return searchEARS2017(searchData=searchData)
+def search(searchData={}, year='2015'):
+    if year=='2015':
+        return searchEARS2015(searchData=searchData)
+    if year=='2017':
+        return searchEARS2017(searchData=searchData)
+        
 
 def get(fn=None, outDir=''):
-    return getEARSFileUNO(fn=fn, outDir=outDir)
+    if fn[0]=='7':
+        return getEARSFileUNO(fn=fn, outDir=outDir)
+    elif fn[0]=='5':
+        return getEARSFileUL(fn=fn, outDir=outDir)
