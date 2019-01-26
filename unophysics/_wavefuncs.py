@@ -1,7 +1,7 @@
 import numpy as np
 import pywt
 
-__all__ = ['threshold', 'thresh_wave_coeffs', 'threshold']
+__all__ = ['threshold', 'thresh_wave_coeffs', 'wave_clean']
 
 default_wavelet = 'db20'
 default_thresh = 50
