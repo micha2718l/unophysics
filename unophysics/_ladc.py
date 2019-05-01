@@ -12,7 +12,7 @@ from sshtunnel import SSHTunnelForwarder
 import pymongo
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
-           'ladcMongoDB', 'get', 'search']
+           'ladcMongoDB', 'get', 'search', 'find', 'Stuff']
 
 
 class ladcMongoDB():
@@ -44,6 +44,24 @@ class ladcMongoDB():
     def __exit__(self, type, value, tb):
         self.close()
 
+class Stuff(object):
+    uno_filter = {
+                'Buoy': {'$in': ['12', '13', '16', '18', '19', '21']},
+                'Disk': '0',
+                }
+
+def find(skip=0, use_filter=True, **kwargs):
+    ''' Find using Mongo object. 
+        defaults to use UNO filter for available data in 2017
+    '''
+    with ladcMongoDB() as db:
+        filt = {}
+        if use_filter:
+            filt = Stuff.uno_filter
+        for k in kwargs:
+            filt[k] = kwargs[k]
+        d = db.detects_2017.find_one(filt, skip=skip)
+        return d
 '''
 *****
 EARS Class
@@ -171,6 +189,7 @@ def searchEARS2017(searchData={}):
     return r.json()
 
 def search(searchData={}, year='2017'):
+    ''' Search using requests api. '''
     if year=='2015':
         return searchEARS2015(searchData=searchData)
     if year=='2017':
