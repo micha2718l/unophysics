@@ -130,15 +130,17 @@ class EARS():
         return (datetime.timedelta(seconds=timestampSeconds) +
                 datetime.datetime(*self.epoch))
 
-def getEARSFileUNO(fn=None, outDir='', warnings=False):
+def getEARSFileUNO(fn=None, outDir='', warnings=False, directory=None):
     if not fn:
         return None
     try:
-        Buoy = int(fn[-3:][:2])
-        Disk = int(fn[-3:][2:])
+        if not directory:
+            Buoy = int(fn[-3:][:2])
+            Disk = int(fn[-3:][2:])
+            directory = 'Buoy{:0>2d}{:0>1d}'.format(Buoy, Disk)
         ftp = ftplib.FTP('ftp.uno.colorsynth.systems')
         ftp.login(user='joseph', passwd='fourier')
-        directory = 'Buoy{:0>2d}{:0>1d}'.format(Buoy, Disk)
+        
         ftp.cwd(directory)
         #print(directory)
         fn_out = os.path.join(outDir, fn)
@@ -196,8 +198,10 @@ def search(searchData={}, year='2017'):
         return searchEARS2017(searchData=searchData)
         
 
-def get(fn=None, outDir='', warnings=True):
+def get(fn=None, outDir='', warnings=True, directory=None):
     '''Gets a file, returns filename, else returns None'''
+    if directory:
+        return getEARSFileUNO(fn=fn, outDir=outDir, warnings=warnings, directory=directory)
     if not fn:
         fn = '5176009D.010'
     try:
