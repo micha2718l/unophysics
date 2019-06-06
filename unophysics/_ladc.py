@@ -8,11 +8,12 @@ import ftplib
 import glob
 import sys
 import os
+import tempfile
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
-           'ladcMongoDB', 'get', 'search', 'find', 'Stuff']
+           'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen']
 
 
 class ladcMongoDB():
@@ -64,7 +65,7 @@ def find(skip=0, use_filter=True, **kwargs):
         return d
 '''
 *****
-EARS Class
+EARS file Classes
 *****
 '''
 
@@ -215,3 +216,9 @@ def get(fn=None, outDir='', warnings=True, directory=None):
         if warnings:
             print(f'Problem getting {fn} Error: {str(e)}')
         return None
+
+def memOpen(fn, warnings=True, directory=None):
+    '''Gets file from network and returns EARS object, does not write to storage.'''
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
+        return EARS(fni)
