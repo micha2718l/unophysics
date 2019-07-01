@@ -289,8 +289,6 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
     else:
         if save_fig is None:
             return None
-        else:
-            return False
     if show_plt == True:
         fig.show()
 
