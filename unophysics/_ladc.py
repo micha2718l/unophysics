@@ -297,6 +297,7 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
 def find_interesting(skip_start=0, number_of_files=9): 
     # change skip_start number to get a new set
     # keep number of files square to make plotting below work smoothly
+    records = []
     with ladcMongoDB() as db:
         to_find = {
                 'type': 6,  # type 6 is the highest frequency band ULL looked for
@@ -307,7 +308,6 @@ def find_interesting(skip_start=0, number_of_files=9):
         '''found = cursor.count()
         if found < number_of_files:
             number_of_files = found'''
-        records = []
         for i in range(number_of_files):
             records.append(cursor.next())
     return records
