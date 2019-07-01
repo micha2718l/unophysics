@@ -276,7 +276,7 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
     b = EARS(fn=get(filename))
     timestamp = b.time_0
     fig, axes = plt.subplots(1,1,figsize=figsize)
-    f, t, Sxx = signal.spectrogram(wavefuncs.wave_clean(b.data), 192000, window='hann')
+    f, t, Sxx = signal.spectrogram(wavefuncs.wave_clean(b.data), b.fs, window='hann')
     axes.set_ylabel('Frequency [Hz]')
     axes.set_xlabel('Time [sec]')
     plt.tight_layout()
