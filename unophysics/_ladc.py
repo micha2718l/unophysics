@@ -312,8 +312,8 @@ def find_interesting(skip_start=0, number_of_files=9):
             records.append(cursor.next())
     return records
 
-def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0):
-    save_folder = Path('data')
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data'):
+    save_folder = Path(directory)
     save_folder.mkdir(exist_ok=True)
     if plot:
         size_of_plots = int(round(np.sqrt(number_of_files)))
