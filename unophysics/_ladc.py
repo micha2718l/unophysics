@@ -304,7 +304,7 @@ def find_interesting(skip_start=0, number_of_files=9):
                 'Buoy': '13',  # 13 is one of the buoys we have here at UNO and...
                 'Disk': '0',  # disk 0 is one we have locally
                 }
-        cursor = db.detects_2017.find(to_find)
+        cursor = db.detects_2017.find(to_find, skip=skip_start)
         '''found = cursor.count()
         if found < number_of_files:
             number_of_files = found'''
