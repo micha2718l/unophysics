@@ -312,7 +312,7 @@ def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0
             records.append(cursor.next())
     return records
 
-def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None):
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None, Type=6, Buoy='13', Disk='0'):
     save_folder = Path(directory)
     save_folder.mkdir(exist_ok=True)
     if plot:
@@ -321,7 +321,7 @@ def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, num
         axF = ax.reshape(-1)
     clips = []
     if records is None:
-        records = find_interesting(number_of_files=number_of_files, skip_start=skip_start)
+        records = find_interesting(number_of_files=number_of_files, skip_start=skip_start, Type=Type, Buoy=Buoy, Disk=Disk)
     for i, record in enumerate(records):
         e = memOpen(record['filename'])
         start_n = record['startRecord'] * 250
