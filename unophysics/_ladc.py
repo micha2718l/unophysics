@@ -280,6 +280,8 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
     plt.tight_layout()
     plt.title(f'File {filename} - Recorded {timestamp}')
     axes.pcolormesh(t, f, 10*np.log10(Sxx), cmap=cmap)
+    if show_plt == True:
+        fig.show()
     if save_fig is not None:
         naming = input('Name this image: ')
         getdir = os.getcwd()
@@ -289,8 +291,6 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
     else:
         if save_fig is None:
             return None
-    if show_plt == True:
-        fig.show()
 
 def find_interesting(skip_start=0, number_of_files=9): 
     # change skip_start number to get a new set
