@@ -263,14 +263,16 @@ def memOpen(fn, warnings=True, directory=None):
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
 
-def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True): 
-    if skip is None:
-        detect = find()
-    elif skip is not None:
-        detect = find(skip=skip)
-    if detect is None:
-        return False
-    filename = detect['filename']
+def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None): 
+    if filename is None:
+        if skip is None:
+            detect = find()
+        elif skip is not None:
+            detect = find(skip=skip)
+        if detect is None:
+            return False
+        filename = detect['filename']
+    # TODO: maybe add error check later
     b = EARS(fn=get(filename))
     timestamp = b.time_0
     fig, axes = plt.subplots(1,1,figsize=figsize)
@@ -292,15 +294,15 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
         if save_fig is None:
             return None
 
-def find_interesting(skip_start=0, number_of_files=9): 
+def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0'): 
     # change skip_start number to get a new set
     # keep number of files square to make plotting below work smoothly
     records = []
     with ladcMongoDB() as db:
         to_find = {
-                'type': 6,  # type 6 is the highest frequency band ULL looked for
-                'Buoy': '13',  # 13 is one of the buoys we have here at UNO and...
-                'Disk': '0',  # disk 0 is one we have locally
+                'type': Type,  # type 6 is the highest frequency band ULL looked for
+                'Buoy': Buoy,  # 13 is one of the buoys we have here at UNO and...
+                'Disk': Disk  # disk 0 is one we have locally
                 }
         cursor = db.detects_2017.find(to_find, skip=skip_start)
         '''found = cursor.count()
@@ -310,7 +312,7 @@ def find_interesting(skip_start=0, number_of_files=9):
             records.append(cursor.next())
     return records
 
-def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data'):
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None):
     save_folder = Path(directory)
     save_folder.mkdir(exist_ok=True)
     if plot:
@@ -318,7 +320,8 @@ def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, num
         fig, ax = plt.subplots(size_of_plots, size_of_plots, figsize=(16, 16))
         axF = ax.reshape(-1)
     clips = []
-    records = find_interesting(number_of_files=number_of_files, skip_start=skip_start)
+    if records is None:
+        records = find_interesting(number_of_files=number_of_files, skip_start=skip_start)
     for i, record in enumerate(records):
         e = memOpen(record['filename'])
         start_n = record['startRecord'] * 250
