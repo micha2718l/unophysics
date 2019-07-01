@@ -12,8 +12,21 @@ import tempfile
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 
+import numpy as np
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+from . import wavefuncs
+import scipy.signal as signal
+import scipy.io.wavfile
+import pywt
+import pandas as pd
+
+from pathlib import Path
+from scipy.io import savemat
+
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
-           'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen']
+           'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
+           'create_spec', 'find_interesting', 'MATLAB_format']
 
 
 class ladcMongoDB():
@@ -50,6 +63,33 @@ class Stuff(object):
                 'Buoy': {'$in': ['12', '13', '16', '18', '19', '21']},
                 'Disk': '0',
                 }
+
+    brydes_calls = {
+                    'ETP' : { 
+                    'Location':'Eastern Tropical Pacific','Call(s) recorded':['Be1', 'Be2', 'Be3','Be4','Be5','Be6'],
+                    'Date':'1999 - 2000'
+                    }, 
+                    
+                    'SCaribbean': {
+                    'Location':'Southern Caribbean','Call(s) recorded':['Be7'], 
+                    'Date':'February 2000 - March 2000'
+                    },
+                    
+                    'NWPacific': {
+                    'Location':'Northwest Pacific','Call(s) recorded':['Be8a', 'Be8b'], 
+                    'Date':'Precise date unknown. Recorded "between June and August."'
+                    },
+                    
+                    'GoC' : {
+                    'Location':'Gulf of California','Call(s) recorded':['Be10','Be11','Be12,','Be4'],
+                    'Date':'1983 - 1986'
+                    },
+                    
+                    'CaboFrio' : {
+                    'Location':'Cabo Frio, Brazil','Call(s) recorded':['PSI','LFT','FMT','TM1','TM2'],
+                    'Date': 'December 2010 - November 2012'
+                    } 
+                    }  
 
 def find(skip=0, use_filter=True, **kwargs):
     ''' Find using Mongo object. 
@@ -222,3 +262,81 @@ def memOpen(fn, warnings=True, directory=None):
     with tempfile.TemporaryDirectory() as tmpdirname:
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
+
+def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True): 
+    if skip is None:
+        detect = find()
+    elif skip is not None:
+        detect = find(skip=skip)
+    if detect is None:
+        return False
+    filename = detect['filename']
+    b = EARS(fn=get(filename))
+    timestamp = b.time_0
+    fig, axes = plt.subplots(1,1,figsize=figsize)
+    f, t, Sxx = signal.spectrogram(wavefuncs.wave_clean(b.data), 192000, window='hann')
+    axes.set_ylabel('Frequency [Hz]')
+    axes.set_xlabel('Time [sec]')
+    plt.tight_layout()
+    plt.title(f'File {filename} - Recorded {timestamp}')
+    axes.pcolormesh(t, f, 10*np.log10(Sxx), cmap=cmap)
+    if save_fig is not None:
+        naming = input('Name this image: ')
+        getdir = os.getcwd()
+        newfilename = (f'{getdir}\\{naming}')
+        plt.savefig(newfilename)
+        return filename
+    else:
+        if save_fig is None:
+            return None
+        else:
+            return False
+    if show_plt == True:
+        fig.show()
+
+def find_interesting(skip_start=0, number_of_files=9): 
+    # change skip_start number to get a new set
+    # keep number of files square to make plotting below work smoothly
+    with ladcMongoDB() as db:
+        to_find = {
+                'type': 6,  # type 6 is the highest frequency band ULL looked for
+                'Buoy': '13',  # 13 is one of the buoys we have here at UNO and...
+                'Disk': '0',  # disk 0 is one we have locally
+                }
+        cursor = db.detects_2017.find(to_find)
+        '''found = cursor.count()
+        if found < number_of_files:
+            number_of_files = found'''
+        records = []
+        for i in range(number_of_files):
+            records.append(cursor.next())
+    return records
+
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9):
+    save_folder = Path('data')
+    save_folder.mkdir(exist_ok=True)
+    if plot:
+        size_of_plots = int(round(np.sqrt(number_of_files)))
+        fig, ax = plt.subplots(size_of_plots, size_of_plots, figsize=(16, 16))
+        axF = ax.reshape(-1)
+    clips = []
+    records = find_interesting()
+    for i, record in enumerate(records):
+        e = memOpen(record['filename'])
+        start_n = record['startRecord'] * 250
+        clipped = e.data[start_n:start_n + clip_length]
+        savemat(str(save_folder.joinpath(f'click{i}.mat')), {'data': clipped, **record})
+        clips.append(clipped)
+        if plot:
+            axF[i].plot(clipped)
+    if plot:
+        if save_plt:
+            plt.savefig(str(save_folder.joinpath('clips.jpg')))
+        if show_plt:
+            plt.show()
+        else:
+            plt.close()
+    clips_dictionary = {f'click{i}_data': c for i, c in enumerate(clips)}
+    clips_dictionary['records'] = records
+    savemat(str(save_folder.joinpath(f'ALL_clicks.mat')), clips_dictionary)
+    savemat(str(save_folder.joinpath(f'ALL_clicksMAT.mat')), {'clips': clips})
