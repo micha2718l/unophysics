@@ -263,7 +263,7 @@ def memOpen(fn, warnings=True, directory=None):
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
 
-def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None): 
+def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None, downloadname=None): 
     if filename is None:
         if skip is None:
             detect = find()
@@ -272,8 +272,10 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
         if detect is None:
             return False
         filename = detect['filename']
+        b = EARS(fn=get(filename))
+    elif filename is not None:
     # TODO: maybe add error check later
-    b = EARS(fn=get(filename))
+        b = EARS(fn=get(filename))
     timestamp = b.time_0
     fig, axes = plt.subplots(1,1,figsize=figsize)
     f, t, Sxx = signal.spectrogram(wavefuncs.wave_clean(b.data), b.fs, window='hann')
@@ -285,7 +287,7 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
     if show_plt == True:
         fig.show()
     if save_fig is not None:
-        naming = input('Name this image: ')
+        naming = downloadname
         getdir = os.getcwd()
         newfilename = (f'{getdir}\\{naming}')
         plt.savefig(newfilename)
