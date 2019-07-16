@@ -26,7 +26,7 @@ from scipy.io import savemat
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
            'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
-           'create_spec', 'find_interesting', 'MATLAB_format']
+           'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format']
 
 
 class ladcMongoDB():
@@ -263,6 +263,22 @@ def memOpen(fn, warnings=True, directory=None):
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
 
+def create_timeseries(filename=None, skip=None, show_plt=True):
+    if filename is None:
+        if skip is None:
+            detect = find()
+        elif skip is not None:
+            detect = find(skip=skip)
+        if detect is None:
+            return False
+        filename = detect['filename']
+        b = EARS(fn=get(filename))
+        timestamp = b.time_0
+        plt.plot(b.data)
+        plt.title(f'File {filename} - Recorded {timestamp}')
+        if show_plt == True:
+            plt.show()
+
 def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None, downloadname=None): 
     if filename is None:
         if skip is None:
@@ -274,7 +290,6 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
         filename = detect['filename']
         b = EARS(fn=get(filename))
     elif filename is not None:
-    # TODO: maybe add error check later
         b = EARS(fn=get(filename))
     timestamp = b.time_0
     fig, axes = plt.subplots(1,1,figsize=figsize)
