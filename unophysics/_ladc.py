@@ -88,7 +88,12 @@ class Stuff(object):
                     'CaboFrio' : {
                     'Location':'Cabo Frio, Brazil','Call(s) recorded':['PSI','LFT','FMT','TM1','TM2'],
                     'Date': 'December 2010 - November 2012'
-                    } 
+                    }, 
+
+                    'GoM' : {
+                    'Location':'Gulf of Mexico','Call(s) recorded':['Stranded calf', '"Long moans"', '"Downsweep sequences"', '"Tonal sequences"'],
+                    'Date': '1988 - 1989 and 2010' 
+                    }
                     }  
 
 def find(skip=0, use_filter=True, **kwargs):
