@@ -96,8 +96,8 @@ class Stuff(object):
                     }
                     }  
 
-    # frequency ranges from Rice et al. "Potential Bryde's whale (Balaenoptera edeni) 
-    # calls recorded in the northern Gulf of Mexico"
+    # frequency ranges (Be calls) from Rice et al. "Potential Bryde's whale (Balaenoptera edeni) 
+    # calls recorded in the northern Gulf of Mexico", add doi numbers
     # except for GoC (Viloria-Gomore et al.)
     frequency_info = { 
                     'ETP' : { 
@@ -117,7 +117,7 @@ class Stuff(object):
                     },
                     
                     'CaboFrio' : {
-                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,112)
+                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,None)
                     },
 
                     'GoM' : {
@@ -131,7 +131,7 @@ def find(skip=0, use_filter=True, **kwargs):
     '''
     with ladcMongoDB() as db:
         filt = {}
-        if use_filter:
+        if use_filter:9
             filt = Stuff.uno_filter
         for k in kwargs:
             filt[k] = kwargs[k]
