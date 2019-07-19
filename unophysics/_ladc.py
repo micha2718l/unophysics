@@ -96,6 +96,35 @@ class Stuff(object):
                     }
                     }  
 
+    # frequency ranges from Rice et al. "Potential Bryde's whale (Balaenoptera edeni) 
+    # calls recorded in the northern Gulf of Mexico"
+    # except for GoC (Viloria-Gomore et al.)
+    frequency_info = { 
+                    'ETP' : { 
+                    'Be1':(20,23), 'Be2':(35.7,38.2), 'Be3':(2.44,26.9), 'Be4':(59.5,60.2), 'Be5':(26.0,26.8), 'Be6':(57.1,232.7)
+                    }, 
+                    
+                    'SCaribbean': {
+                    'Be7':(43.7,48.7)
+                    },
+                    
+                    'NWPacific': {
+                    'Be8a':(43.0,48.0), 'Be8b':(137,192)
+                    },
+                    
+                    'GoC' : {
+                    'Be10':(79,152), 'Be11':(111,247), 'Be12':(93,145), 'Free-range feeding study':(165,875), 'Calves':(700,900)
+                    },
+                    
+                    'CaboFrio' : {
+                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,112)
+                    },
+
+                    'GoM' : {
+                    'Stranded calf':(200,900), '"Long moans"':(43,208), '"Down-sweep sequences"':(51,113), '"Tonal sequences"':(103,103)
+                    }
+                    } 
+
 def find(skip=0, use_filter=True, **kwargs):
     ''' Find using Mongo object. 
         defaults to use UNO filter for available data in 2017
