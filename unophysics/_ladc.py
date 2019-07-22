@@ -131,7 +131,7 @@ def find(skip=0, use_filter=True, **kwargs):
     '''
     with ladcMongoDB() as db:
         filt = {}
-        if use_filter:9
+        if use_filter:
             filt = Stuff.uno_filter
         for k in kwargs:
             filt[k] = kwargs[k]
