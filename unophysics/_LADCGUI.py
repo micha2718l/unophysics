@@ -25,39 +25,34 @@ from sshtunnel import SSHTunnelForwarder
 
 root = tkinter.Tk()
 root.title('LADC-GEMM Interactive')
-root.geometry('500x250')
+root.geometry('540x260')
 root.grid_columnconfigure(1, minsize=135)
 
 # SET UP INFORMATION PAGE FOR EACH LOCATION
+localcalls = []
 def info_location_change():
     currentlocation.set(ladc.Stuff.brydes_calls[info_location.get()]['Location'])
     locationlabel.grid(column=1, row=0, sticky=tkinter.N+tkinter.W)
 
-    numcallsbookmark = ladc.Stuff.brydes_calls[info_location.get()]['Call(s) recorded']
-    numcallsstring = ', '.join(numcallsbookmark)
+    global localcalls
+    localcalls = ladc.Stuff.brydes_calls[info_location.get()]['Call(s) recorded']
+    numcallsstring = ', '.join(localcalls)
     current_numcalls.set(numcallsstring)
     numcalls_label.grid(column=1, row=0, sticky=tkinter.N+tkinter.W, pady=5)
-
+    callmenu.delete(0, tkinter.END)
+    for x in localcalls:
+        callmenu.insert(tkinter.END, x)
     current_date.set(ladc.Stuff.brydes_calls[info_location.get()]['Date'])
     date_label.grid(column=1, row=0, sticky=tkinter.N+tkinter.W, pady=5)
+    current_minmax.set('')
 
 # LOCATION BUTTONS
 infobutton_box = tkinter.LabelFrame(root)
 info_location = tkinter.StringVar()
-info_location.set(None)
+info_location.set('ETP')
 
 currentlocation=tkinter.StringVar()
 locationlabel = tkinter.Label(root, textvariable=currentlocation, font=('bold', 13))
-
-numcallsbox = tkinter.LabelFrame(root)
-numcalls = tkinter.Label(numcallsbox, text='Call(s) recorded: ')
-current_numcalls = tkinter.StringVar()
-numcalls_label = tkinter.Label(numcallsbox, textvariable=current_numcalls, wraplength=200)
-
-datebox = tkinter.LabelFrame(root)
-date = tkinter.Label(datebox, text='Date: ')
-current_date = tkinter.StringVar()
-date_label = tkinter.Label(datebox, textvariable=current_date, wraplength=200, justify='left')
 
 etp = tkinter.Radiobutton(infobutton_box, text='Eastern Tropical Pacific', variable=info_location, value='ETP', command=info_location_change)
 scarib = tkinter.Radiobutton(infobutton_box, text='Southern Caribbean', variable=info_location, value='SCaribbean', command=info_location_change)
@@ -65,6 +60,41 @@ nwpac = tkinter.Radiobutton(infobutton_box, text='Northwest Pacific', variable=i
 goc = tkinter.Radiobutton(infobutton_box, text='Gulf of California', variable=info_location, value='GoC', command=info_location_change)
 cabo = tkinter.Radiobutton(infobutton_box, text='Cabo Frio, Brazil', variable=info_location, value='CaboFrio', command=info_location_change)
 gom = tkinter.Radiobutton(infobutton_box, text='Gulf of Mexico', variable=info_location, value='GoM', command=info_location_change)
+
+# REGIONAL CALL INFORMATION WIDGETS
+numcallsbox = tkinter.LabelFrame(root)
+numcalls = tkinter.Label(numcallsbox, text='Call(s) recorded: ')
+current_numcalls = tkinter.StringVar()
+numcalls_label = tkinter.Label(numcallsbox, textvariable=current_numcalls, wraplength=200, justify='left')
+
+datebox = tkinter.LabelFrame(root)
+date = tkinter.Label(datebox, text='Date: ')
+current_date = tkinter.StringVar()
+date_label = tkinter.Label(datebox, textvariable=current_date, wraplength=200, justify='left')
+
+# FREQUENCY INFORMATION WIDGETS
+freqbox = tkinter.LabelFrame(root)
+freq = tkinter.Label(freqbox, text='Frequency information: ')
+
+def change_facts(event):
+    selecttuple = event.widget.curselection()
+    selectindex = selecttuple[0]
+    callname = localcalls[selectindex]
+    minmaxrange = ladc.Stuff.frequency_info[info_location.get()][callname]
+    minbookmark = minmaxrange[0]
+    maxbookmark = minmaxrange[1]
+    minmax_string = f'{minbookmark} - {maxbookmark} Hz'
+    current_minmax.set(minmax_string) 
+
+callbox = tkinter.Frame(freqbox)
+call = tkinter.Label(callbox, text='Call: ')
+callmenu = tkinter.Listbox(callbox, selectmode='SINGLE', height=6) 
+callmenu.bind('<<ListboxSelect>>', change_facts)
+
+minmaxbox = tkinter.Frame(freqbox)
+minmax = tkinter.Label(minmaxbox, text='Min/max frequencies: ')
+current_minmax = tkinter.StringVar()
+minmax_label = tkinter.Label(minmaxbox, textvariable=current_minmax) 
 
 # MENU WIDGET CHANGES
 def datapage():
@@ -74,7 +104,7 @@ def datapage():
     root.grid_rowconfigure(index=0, minsize=10)
     root.grid_rowconfigure(index=2, minsize=10)
     
-    widgetlist = [infobutton_box, etp, scarib, nwpac, goc, cabo, gom, datebox, date, numcallsbox, numcalls, locationlabel, numcalls_label, date_label]
+    widgetlist = [minmax_label, callbox, minmaxbox, freqbox, freq, call, callmenu, minmax, infobutton_box, etp, scarib, nwpac, goc, cabo, gom, datebox, date, numcallsbox, numcalls, locationlabel, numcalls_label, date_label]
     for widget in widgetlist:
         widget.grid_remove()
 
@@ -102,7 +132,7 @@ def datapage():
 def infopage():
     info_location.set(None)
 
-    root.grid_columnconfigure(index=1, minsize=300)
+    root.grid_columnconfigure(index=1, minsize=330)
     root.grid_rowconfigure(index=0, minsize=30)
     root.grid_rowconfigure(index=2, minsize=20)
 
@@ -123,6 +153,19 @@ def infopage():
     numcalls.grid(column=0, row=0, sticky=tkinter.W+tkinter.N, padx=10, pady=5)
     datebox.grid(column=1, row=2, columnspan=2, sticky=tkinter.W+tkinter.E+tkinter.N+tkinter.S)
     date.grid(column=0, row=0, sticky=tkinter.W+tkinter.N, padx=10, pady=5)
+
+    freqbox.grid(column=1, row=3, columnspan=2, sticky=tkinter.W+tkinter.E+tkinter.N+tkinter.S)
+    freq.grid(column=0, row=0)
+
+    callbox.grid(column=0, row=1)
+    call.grid(column=0, row=0)
+    callmenu.grid(column=1, row=0)
+
+    minmaxbox.grid(column=1, row=1)
+    minmax.grid(column=0, row=0)
+    minmax_label.grid(column=1, row=0)
+    callmenu.delete(0, tkinter.END)
+    current_minmax.set('')
 
 # CREATING MENU
 menu = tkinter.Menu(root)
@@ -146,7 +189,7 @@ enter_onefile.grid(column=1, row=0, pady=5, padx=3)
 def skip_error_check(number):
     valid = False
     if number.isdigit():
-        if (int(number) <= 100) and (int(number) >= 0):
+        if (int(number) <= 10000) and (int(number) >= 0):
             valid = True
     elif number == '':
         valid = True
@@ -156,7 +199,7 @@ skipval_box = tkinter.LabelFrame(root, text='Skip Value')
 skipval_box.grid(column=2, row=0, sticky=tkinter.W+tkinter.E, padx=10, pady=10)
 skipval = tkinter.StringVar()
 skipval.set(0)
-enter_skipval = tkinter.Spinbox(skipval_box, from_=0, to=100, textvariable=skipval, width=16, validate='all', validatecommand=validate_skip)
+enter_skipval = tkinter.Spinbox(skipval_box, from_=0, to=10000, textvariable=skipval, width=16, validate='all', validatecommand=validate_skip)
 enter_skipval.grid(column=2, row=0, pady=5, padx=3)
 
 # OPTION MENUS
@@ -230,11 +273,6 @@ amp_plot.grid(row=1, sticky=tkinter.W, pady=15, padx=5)
 search_interesting = tkinter.Radiobutton(databutton_box, text= 'Find Interesting', command=show_options, variable=current_page, value='interesting')
 search_interesting.grid(row=2, sticky=tkinter.W, pady=15, padx=5)
 
-# SHOW RECORDS CHECK
-'''showrecords_int = tkinter.IntVar()
-showrecords_check = tkinter.Checkbutton(root, text='Display File Record(s)', variable=showrecords_int)
-showrecords_check.grid(column=2, row=3, sticky=tkinter.E+tkinter.W, padx=10, pady=10)'''
-
 # RESET BUTTON
 def reset_inputs():
     global onefilename, skipval, current_page, cmap_box, colorschemes, fileamount_box, fileamounts, fileamount_str, colorscheme_str
@@ -255,7 +293,7 @@ trueskip = 0
 truefilename = ''
 fileamount_int = 0
 
-def recordswindow():
+def recordswindow(recordfn=None, recordskip=None, recordnumber=None):
     global trueskip, truefilename, fileamount_int
 
     recordswindow = tkinter.Toplevel(root)
@@ -272,40 +310,44 @@ def recordswindow():
     headerlabel = tkinter.Label(recordswindow, textvariable=trueheader, font=(6))
     
     if current_page.get() == 'spec' or current_page.get() == 'amp':
-        if truefilename is None:
-            if trueskip is None:
+        if recordfn is None:
+            if recordskip is None:
                 detect = ladc.find()
-            elif trueskip is not None:
-                detect = ladc.find(skip=trueskip)
-            
-            detectbookmark = str(detect)
-            truerecords.set(detectbookmark)
-            
-            filenamebookmark = detect['filename']
-            headerbookmark = (f'File {filenamebookmark} Records')
-            trueheader.set(headerbookmark)
+            elif recordskip is not None:
+                detect = ladc.find(skip=recordskip)
+        elif recordfn is not None:
+            detect = ladc.find(filename=recordfn)
+
+        detectbookmark = str(detect)
+        truerecords.set(detectbookmark)
+        
+        filenamebookmark = detect['filename']
+        headerbookmark = (f'File {filenamebookmark} Records')
+        trueheader.set(headerbookmark)
 
     if current_page.get() == 'interesting':
-        truerecords.set(ladc.find_interesting(skip_start=trueskip, number_of_files=fileamount_int, Type=6, Buoy='13', Disk='0'))
-        trueheader.set('File Records')
+        if recordnumber is not None:
+            truerecords.set(ladc.find_interesting(skip_start=recordskip, number_of_files=recordnumber, Type=6, Buoy='13', Disk='0'))
+            trueheader.set('File Records')
 
     recordlabel.grid(column=0, row=1, sticky=tkinter.E+tkinter.W, padx=5, pady=5)
     headerlabel.grid(column=0, row=0, sticky=tkinter.N+tkinter.W, padx=5, pady=5)
     print('window')
-
 
 # POPUP WINDOW
 def build_plot(): 
     global trueskip, truefilename, fileamount_int
     print('built plot')
 
-    trueskip = int(skipval.get())
-    if trueskip == 0:
-        trueskip = None
     truefilename = onefilename.get()
     if truefilename == '':
         truefilename = None
+    
     fileamount_int = int(fileamount_str.get())
+
+    trueskip = int(skipval.get())
+    if trueskip == 0:
+        trueskip = None
 
     if current_page.get() == 'spec' or current_page.get() == 'amp':
         if (trueskip is not None) and (truefilename is not None):
@@ -317,8 +359,8 @@ def build_plot():
             okbutton.grid(column=0, row=1, sticky=tkinter.E+tkinter.W, padx=10, pady=10)
         else:
             try:
-                recordswindow()
-                if current_page.get() == 'spec':
+                recordswindow(recordfn=truefilename, recordskip=trueskip, recordnumber=None)
+                if current_page.get() == 'spec': # use the output from the window building function instead of getting it from the widget
                     ladc.create_spec(skip=trueskip, cmap=(colorscheme_str.get()), figsize=(6,4), save_fig=None, show_plt=True, filename=truefilename)
                 if current_page.get() == 'amp':
                     ladc.create_timeseries(filename=truefilename, skip=trueskip, show_plt=True)
@@ -331,9 +373,9 @@ def build_plot():
                 okbutton.grid(column=0, row=1, sticky=tkinter.E+tkinter.W, padx=10, pady=10)
 
     if current_page.get() == 'interesting':
+        recordswindow(recordfn=None, recordskip=trueskip, recordnumber=fileamount_int)
         ladc.find_interesting(skip_start=trueskip, number_of_files=fileamount_int, Type=6, Buoy='13', Disk='0')
         ladc.MATLAB_format(plot=True, show_plt=True, save_plt=False, clip_length=577, number_of_files=fileamount_int, directory='data', records=None, Type=6, Buoy='13', Disk='0', skip_start=trueskip)
-        recordswindow()
 
 show_button = tkinter.Button(root, text='Create Figure(s)', command=build_plot)
 show_button.grid(column=2, row=2, sticky=tkinter.E+tkinter.W, padx=10, pady=10)
