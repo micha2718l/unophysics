@@ -12,8 +12,21 @@ import tempfile
 from sshtunnel import SSHTunnelForwarder
 import pymongo
 
+import numpy as np
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+from . import wavefuncs
+import scipy.signal as signal
+import scipy.io.wavfile
+import pywt
+import pandas as pd
+
+from pathlib import Path
+from scipy.io import savemat
+
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
-           'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen']
+           'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
+           'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format']
 
 
 class ladcMongoDB():
@@ -50,6 +63,67 @@ class Stuff(object):
                 'Buoy': {'$in': ['12', '13', '16', '18', '19', '21']},
                 'Disk': '0',
                 }
+
+    brydes_calls = {
+                    'ETP' : { 
+                    'Location':'Eastern Tropical Pacific','Call(s) recorded':['Be1', 'Be2', 'Be3','Be4','Be5','Be6'],
+                    'Date':'1999 - 2000'
+                    }, 
+                    
+                    'SCaribbean': {
+                    'Location':'Southern Caribbean','Call(s) recorded':['Be7'], 
+                    'Date':'February 2000 - March 2000'
+                    },
+                    
+                    'NWPacific': {
+                    'Location':'Northwest Pacific','Call(s) recorded':['Be8a', 'Be8b'], 
+                    'Date':'Precise date unknown. Recorded "between June and August."'
+                    },
+                    
+                    'GoC' : {
+                    'Location':'Gulf of California','Call(s) recorded':['Be10','Be11','Be12,','Be4'],
+                    'Date':'1983 - 1986'
+                    },
+                    
+                    'CaboFrio' : {
+                    'Location':'Cabo Frio, Brazil','Call(s) recorded':['PSI','LFT','FMT','TM1','TM2'],
+                    'Date': 'December 2010 - November 2012'
+                    }, 
+
+                    'GoM' : {
+                    'Location':'Gulf of Mexico','Call(s) recorded':['Stranded calf', '"Long moans"', '"Downsweep sequences"', '"Tonal sequences"'],
+                    'Date': '1988 - 1989 and 2010' 
+                    }
+                    }  
+
+    # frequency ranges (Be calls) from Rice et al. "Potential Bryde's whale (Balaenoptera edeni) 
+    # calls recorded in the northern Gulf of Mexico", add doi numbers
+    # except for GoC (Viloria-Gomore et al.)
+    frequency_info = { 
+                    'ETP' : { 
+                    'Be1':(20,23), 'Be2':(35.7,38.2), 'Be3':(2.44,26.9), 'Be4':(59.5,60.2), 'Be5':(26.0,26.8), 'Be6':(57.1,232.7)
+                    }, 
+                    
+                    'SCaribbean': {
+                    'Be7':(43.7,48.7)
+                    },
+                    
+                    'NWPacific': {
+                    'Be8a':(43.0,48.0), 'Be8b':(137,192)
+                    },
+                    
+                    'GoC' : {
+                    'Be10':(79,152), 'Be11':(111,247), 'Be12':(93,145), 'Free-range feeding study':(165,875), 'Calves':(700,900)
+                    },
+                    
+                    'CaboFrio' : {
+                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,np.nan)
+                    },
+
+                    'GoM' : {
+                    'Stranded calf':(200,900), '"Long moans"':(43,208), '"Down-sweep sequences"':(51,113), '"Tonal sequences"':(103,103)
+                    }
+                    } 
 
 def find(skip=0, use_filter=True, **kwargs):
     ''' Find using Mongo object. 
@@ -222,3 +296,99 @@ def memOpen(fn, warnings=True, directory=None):
     with tempfile.TemporaryDirectory() as tmpdirname:
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
+
+def create_timeseries(filename=None, skip=None, show_plt=True):
+    if filename is None:
+        if skip is None:
+            detect = find()
+        elif skip is not None:
+            detect = find(skip=skip)
+        if detect is None:
+            return False
+        filename = detect['filename']
+        b = EARS(fn=get(filename))
+        timestamp = b.time_0
+        plt.plot(b.data)
+        plt.title(f'File {filename} - Recorded {timestamp}')
+        if show_plt == True:
+            plt.show()
+
+def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None, downloadname=None): 
+    if filename is None:
+        if skip is None:
+            detect = find()
+        elif skip is not None:
+            detect = find(skip=skip)
+        if detect is None:
+            return False
+        filename = detect['filename']
+        b = EARS(fn=get(filename))
+    elif filename is not None:
+        b = EARS(fn=get(filename))
+    timestamp = b.time_0
+    fig, axes = plt.subplots(1,1,figsize=figsize)
+    f, t, Sxx = signal.spectrogram(wavefuncs.wave_clean(b.data), b.fs, window='hann')
+    axes.set_ylabel('Frequency [Hz]')
+    axes.set_xlabel('Time [sec]')
+    plt.tight_layout()
+    plt.title(f'File {filename} - Recorded {timestamp}')
+    axes.pcolormesh(t, f, 10*np.log10(Sxx), cmap=cmap)
+    if show_plt == True:
+        fig.show()
+    if save_fig is not None:
+        naming = downloadname
+        getdir = os.getcwd()
+        newfilename = (f'{getdir}\\{naming}')
+        plt.savefig(newfilename)
+        return filename
+    else:
+        if save_fig is None:
+            return None
+
+def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0'): 
+    # change skip_start number to get a new set
+    # keep number of files square to make plotting below work smoothly
+    records = []
+    with ladcMongoDB() as db:
+        to_find = {
+                'type': Type,  # type 6 is the highest frequency band ULL looked for
+                'Buoy': Buoy,  # 13 is one of the buoys we have here at UNO and...
+                'Disk': Disk  # disk 0 is one we have locally
+                }
+        cursor = db.detects_2017.find(to_find, skip=skip_start)
+        '''found = cursor.count()
+        if found < number_of_files:
+            number_of_files = found'''
+        for i in range(number_of_files):
+            records.append(cursor.next())
+    return records
+
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None, Type=6, Buoy='13', Disk='0'):
+    save_folder = Path(directory)
+    save_folder.mkdir(exist_ok=True)
+    if plot:
+        size_of_plots = int(round(np.sqrt(number_of_files)))
+        fig, ax = plt.subplots(size_of_plots, size_of_plots, figsize=(16, 16))
+        axF = ax.reshape(-1)
+    clips = []
+    if records is None:
+        records = find_interesting(number_of_files=number_of_files, skip_start=skip_start, Type=Type, Buoy=Buoy, Disk=Disk)
+    for i, record in enumerate(records):
+        e = memOpen(record['filename'])
+        start_n = record['startRecord'] * 250
+        clipped = e.data[start_n:start_n + clip_length]
+        savemat(str(save_folder.joinpath(f'click{i}.mat')), {'data': clipped, **record})
+        clips.append(clipped)
+        if plot:
+            axF[i].plot(clipped)
+    if plot:
+        if save_plt:
+            plt.savefig(str(save_folder.joinpath('clips.jpg')))
+        if show_plt:
+            plt.show()
+        else:
+            plt.close()
+    clips_dictionary = {f'click{i}_data': c for i, c in enumerate(clips)}
+    clips_dictionary['records'] = records
+    savemat(str(save_folder.joinpath(f'ALL_clicks.mat')), clips_dictionary)
+    savemat(str(save_folder.joinpath(f'ALL_clicksMAT.mat')), {'clips': clips})
