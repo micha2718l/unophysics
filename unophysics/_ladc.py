@@ -24,6 +24,8 @@ import pandas as pd
 from pathlib import Path
 from scipy.io import savemat
 
+from . import config
+
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
            'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
            'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format']
