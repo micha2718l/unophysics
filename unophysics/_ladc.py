@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import requests
-
 import struct
 import datetime
 import ftplib
@@ -9,10 +7,30 @@ import glob
 import sys
 import os
 import tempfile
-from sshtunnel import SSHTunnelForwarder
-import pymongo
+from pathlib import Path
 
-import numpy as np
+try:
+    import requests
+except:
+    print('requests not found')
+    requests = None
+try:
+    from sshtunnel import SSHTunnelForwarder
+    SSHTunnelForwarder = None
+except:
+    print('sshtunnel not found')
+try:
+    import pymongo
+except:
+    print('pymongo not found')
+    pymongo = None
+try:
+    import numpy as np
+    nan = np.nan
+except:
+    print('numpy not found')
+    np = None
+    nan = None
 try:
     import matplotlib as mpl 
     import matplotlib.pyplot as plt
@@ -20,15 +38,24 @@ except:
     print(f'Matplotlib not found')
     mpl = None
     plt = None
+try:
+    import scipy.signal as signal
+    import scipy.io.wavfile
+    from scipy.io import savemat
+except:
+    print('scipy not found')
+try:
+    import pywt
+except:
+    print('pywt not found')
+    pywt = None
+try:
+    import pandas as pd
+except:
+    print('pandas not found')
+    pd = None
+
 from . import wavefuncs
-import scipy.signal as signal
-import scipy.io.wavfile
-import pywt
-import pandas as pd
-
-from pathlib import Path
-from scipy.io import savemat
-
 from . import config
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
@@ -124,7 +151,7 @@ class Stuff(object):
                     },
                     
                     'CaboFrio' : {
-                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,np.nan)
+                    'PSI':(175,674), 'LFT':(7.57,20.39), 'FMT':(336,915), 'TM1':(85.7,123.6), 'TM2':(96,nan)
                     },
 
                     'GoM' : {

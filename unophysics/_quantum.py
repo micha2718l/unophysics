@@ -1,4 +1,8 @@
-import sympy as sp
+try:
+    import sympy as sp
+except:
+    print('sympy not found')
+    sp = None
 
 __all__ = ["H", "E", "P", "phi"]
 

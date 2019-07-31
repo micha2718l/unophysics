@@ -13,7 +13,6 @@ def load_credentials(cred_fn='unophysics.cred'):
 
     try:
         fn = next(Path.home().glob(cred_fn))
-        print(fn)
         with open(fn) as f:
             creds = json.load(f)
     except StopIteration:

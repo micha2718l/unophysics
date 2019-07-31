@@ -1,16 +1,22 @@
-
-import sympy
-from IPython.display import Latex, Markdown, display
+try:
+    import sympy
+    lt = sympy.latex
+    sympy.init_printing()
+except:
+    print('sympy not found')
+    sympy = None
+    lt = None
+try:
+    from IPython.display import Latex, Markdown, display
+except:
+    print('IPython not found')
+    Latex, Markdown, display = None, None, None
 
 __all__ = ['pmath', 'nbprint', 'setup_notebook']
 
 
 def nbprint(string):
     display(Markdown(string))
-
-
-lt = sympy.latex
-sympy.init_printing()
 
 
 def pmath(sym, ret=False, pre='', post='', preM='', postM=''):

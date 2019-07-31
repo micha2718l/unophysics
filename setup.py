@@ -11,14 +11,14 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = ['Click>=6.0', 'requests', 'sshtunnel', 'pymongo', 'sympy', 'jupyter', 'numpy', 'scipy', 'PyWavelets', 'pandas']
+requirements = []
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = []
 
-test_requirements = ['pytest', ]
+test_requirements = []
 
 setup(
-    author="Michael Haas",
+    author="Michael Haas42",
     author_email='mjhaas@uno.edu',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

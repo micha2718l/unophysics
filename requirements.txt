@@ -1,5 +1,0 @@
-requests
-sshtunnel
-pymongo
-sympy
-jupyter

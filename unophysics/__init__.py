@@ -4,7 +4,8 @@
 
 __author__ = """Michael Haas"""
 __email__ = 'mjhaas@uno.edu'
-__version__ = '0.1.0'
+__version__ = '0.2.1'
+print(__version__)
 
 from . import config
 from . import ladc

@@ -1,5 +1,13 @@
-import numpy as np
-import pywt
+try:
+    import numpy as np
+except:
+    print('numpy not found')
+    np = None
+try:
+    import pywt
+except:
+    print('PyWavelets not found')
+    pywt = None
 
 __all__ = ['threshold', 'thresh_wave_coeffs', 'wave_clean']
 
