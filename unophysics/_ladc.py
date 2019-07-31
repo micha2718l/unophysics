@@ -13,8 +13,13 @@ from sshtunnel import SSHTunnelForwarder
 import pymongo
 
 import numpy as np
-import matplotlib as mpl 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib as mpl 
+    import matplotlib.pyplot as plt
+except:
+    print(f'Matplotlib not found')
+    mpl = None
+    plt = None
 from . import wavefuncs
 import scipy.signal as signal
 import scipy.io.wavfile
