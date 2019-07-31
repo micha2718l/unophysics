@@ -6,6 +6,7 @@ __author__ = """Michael Haas"""
 __email__ = 'mjhaas@uno.edu'
 __version__ = '0.1.0'
 
+from . import config
 from . import ladc
 from . import nbtools
 from . import quantum
