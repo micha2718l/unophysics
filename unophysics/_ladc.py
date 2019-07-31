@@ -13,8 +13,13 @@ from sshtunnel import SSHTunnelForwarder
 import pymongo
 
 import numpy as np
-import matplotlib as mpl 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib as mpl 
+    import matplotlib.pyplot as plt
+except:
+    print(f'Matplotlib not found')
+    mpl = None
+    plt = None
 from . import wavefuncs
 import scipy.signal as signal
 import scipy.io.wavfile
@@ -24,6 +29,8 @@ import pandas as pd
 from pathlib import Path
 from scipy.io import savemat
 
+from . import config
+
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
            'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
            'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format']
@@ -32,9 +39,9 @@ __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
 class ladcMongoDB():
     
     def __init__(self):
-        SERVER_HOST = "***REMOVED***"
-        SERVER_USER = "***REMOVED***"
-        SERVER_PASS = "***REMOVED***"
+        SERVER_HOST = config.server_mongo_uno.address
+        SERVER_USER = config.server_mongo_uno.username
+        SERVER_PASS = config.server_mongo_uno.password
 
         self.server = SSHTunnelForwarder(
             SERVER_HOST,
@@ -213,8 +220,8 @@ def getEARSFileUNO(fn=None, outDir='', warnings=False, directory=None):
             Buoy = int(fn[-3:][:2])
             Disk = int(fn[-3:][2:])
             directory = 'Buoy{:0>2d}{:0>1d}'.format(Buoy, Disk)
-        ftp = ftplib.FTP('ftp.***REMOVED***')
-        ftp.login(user='***REMOVED***', passwd='***REMOVED***')
+        ftp = ftplib.FTP(config.server_ftp_uno.address)
+        ftp.login(user=config.server_ftp_uno.username, passwd=config.server_ftp_uno.password)
         
         ftp.cwd(directory)
         #print(directory)
@@ -236,8 +243,8 @@ def getEARSFileUL(fn=None, outDir='', warnings=False):
     try:
         Buoy = int(fn[-3:][:2])
         Disk = int(fn[-3:][2:])
-        ftp = ftplib.FTP('***REMOVED***')
-        ftp.login(user='***REMOVED***', passwd='***REMOVED***')
+        ftp = ftplib.FTP(config.server_ftp_ull.address)
+        ftp.login(user=config.server_ftp_ull.username, passwd=config.server_ftp_ull.password)
         if Buoy < 6:
             directory = '/Volumes/FirstRAID/'
         elif Buoy == 6 and Disk == 1:
@@ -262,7 +269,7 @@ def getEARSFileUL(fn=None, outDir='', warnings=False):
 
 def searchEARS2017(searchData={}):
     searchJson = {k: str(v) for k,v in searchData.items()}
-    r = requests.post('http://matlab.***REMOVED***/ull_detection_2017_available_data', json=searchJson)
+    r = requests.post(config.server_api_uno.address, json=searchJson)
     return r.json()
 
 def search(searchData={}, year='2017'):
