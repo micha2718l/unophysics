@@ -159,7 +159,7 @@ class EARS():
     fs = 192000
     fs_time = 32000
 
-    def __init__(self, fn=None, epoch=None, year='2017'):
+    def __init__(self, fn=None, epoch=None, year='2017', norm=False):
         self.data = []
         self.headers = []
         self.timestamps = []
@@ -178,9 +178,12 @@ class EARS():
             self.epoch = epoch
         else:
             self.epoch = self.epochs.get(self.year, self.epochs['2015'])
+        self.norm = norm
         self.load(self.filename)
 
-    def load(self, fn=None):
+    def load(self, fn=None, norm=None):
+        if not norm:
+            norm = self.norm
         if fn is not None:
             self.filename = fn
         with open(self.filename, 'rb') as f:
@@ -202,6 +205,9 @@ class EARS():
             seconds=len(data) / self.fs)
         self.timestamps = timestamps
         self.headers = headers
+        if norm:
+            data -= np.mean(data)
+            data /= np.max(np.abs(data))
         self.data = data
 
     def header2timestamp(self, h):
