@@ -5,6 +5,17 @@
   - TODO: seperate the generally useful parts from the specific parts.
 - TODO: add in proper badges
 
+## Installation
+---------------
+- Recommended to use a virtualenv. `python -m virtualenv *name of directory to put venv*`
+- To install:
+  - Either clone this repo then install:
+    - `git clone https://github.com/micha2718l/unophysics.git`
+    - `cd unophysics`
+    - `pip install .`
+  - Or use `pip`
+    - `pip install unophysics`
+
 ## Tools for physics from UNO.
 ------------------------------
 - Free software: MIT license
