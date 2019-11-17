@@ -37,6 +37,7 @@ setup(
     },
     install_requires=requirements,
     license="MIT license",
+    long_description_content_type='text/markdown',
     long_description=readme + '\n\n' + history,
     include_package_data=True,
     keywords='unophysics',
@@ -46,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/micha2718l/unophysics',
-    version='0.2.0',
+    version='0.3.5',
     zip_safe=False,
 )
