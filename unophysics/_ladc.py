@@ -22,7 +22,6 @@ except:
     plt = None
 from . import wavefuncs
 import scipy.signal as signal
-import scipy.io.wavfile
 import pywt
 import pandas as pd
 
