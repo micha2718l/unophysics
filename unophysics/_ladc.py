@@ -32,7 +32,8 @@ from . import config
 
 __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
            'ladcMongoDB', 'get', 'search', 'find', 'Stuff', 'memOpen',
-           'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format']
+           'create_timeseries', 'create_spec', 'find_interesting', 'MATLAB_format',
+           'find_by_datetime']
 
 
 class ladcMongoDB():
@@ -143,6 +144,35 @@ def find(skip=0, use_filter=True, **kwargs):
             filt[k] = kwargs[k]
         d = db.detects_2017.find_one(filt, skip=skip)
         return d
+
+def find_by_datetime(datetime_start, datetime_stop=None, buoys=None):
+    ''' Find by datetime range, if no stop is given defaults to a 10 minute
+        range. buoys takes a list of strings with buoy numbers.
+    '''
+    if not datetime_stop:
+        datetime_stop = datetime_start + datetime.timedelta(minutes=10)
+    query = {
+        '$and': [{
+            'datetime': {
+                '$gte': datetime_start
+            }
+        }, {
+            'datetime': {
+                '$lte': datetime_stop
+            }
+        }]
+    }
+    if buoys:
+        buoy_qs = []
+        for buoy in buoys:
+            buoy_qs.append({'buoy': buoy})
+        query['$and'].append({'$or': buoy_qs})
+    print(query)
+    with ladcMongoDB() as db:
+        finds = list(db.fileInfo.find(query))
+    return finds
+
+
 '''
 *****
 EARS file Classes
