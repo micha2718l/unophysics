@@ -47,6 +47,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/micha2718l/unophysics',
-    version='0.4.5',
+    version='0.4.7',
     zip_safe=False,
 )

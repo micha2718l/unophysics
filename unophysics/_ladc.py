@@ -23,7 +23,6 @@ except:
 from . import wavefuncs
 import scipy.signal as signal
 import pywt
-import pandas as pd
 
 from pathlib import Path
 from scipy.io import savemat
@@ -145,12 +144,12 @@ def find(skip=0, use_filter=True, **kwargs):
         d = db.detects_2017.find_one(filt, skip=skip)
         return d
 
-def find_by_datetime(datetime_start, datetime_stop=None, buoys=None):
-    ''' Find by datetime range, if no stop is given defaults to a 10 minute
+def find_by_datetime(datetime_start, datetime_stop=None, minutes_delta=5, buoys=None):
+    ''' Find by datetime range, if no stop is given defaults to a 5 minute
         range. buoys takes a list of strings with buoy numbers.
     '''
     if not datetime_stop:
-        datetime_stop = datetime_start + datetime.timedelta(minutes=10)
+        datetime_stop = datetime_start + datetime.timedelta(minutes=minutes_delta)
     query = {
         '$and': [{
             'datetime': {
@@ -167,7 +166,7 @@ def find_by_datetime(datetime_start, datetime_stop=None, buoys=None):
         for buoy in buoys:
             buoy_qs.append({'buoy': buoy})
         query['$and'].append({'$or': buoy_qs})
-    print(query)
+    #print(query)
     with ladcMongoDB() as db:
         finds = list(db.fileInfo.find(query))
     return finds
