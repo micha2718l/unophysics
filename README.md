@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/micha2718l/unophysics.svg?branch=master)](https://travis-ci.org/micha2718l/unophysics)
+
 # UNO Physics Tools
 -------------------
 - Python tools collected from data analysis projects at the University of New Orleans.
