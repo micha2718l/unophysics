@@ -7,12 +7,15 @@ Server = collections.namedtuple('Server',
 
 __all__ = ['server_mongo_uno', 'server_ftp_uno', 'server_ftp_ull', 'server_api_uno', 'load_credentials']
 
-def load_credentials(cred_fn='unophysics.cred'):
+def load_credentials(cred_fn='unophysics.cred', home=True):
     global server_mongo_uno, server_ftp_uno, server_ftp_ull, server_api_uno
     creds = {}
 
     try:
-        fn = next(Path.home().glob(cred_fn))
+        if home:
+            fn = next(Path.home().glob(cred_fn))
+        else:
+            fn = next(glob(cred_fn))
         print(fn)
         with open(fn) as f:
             creds = json.load(f)
