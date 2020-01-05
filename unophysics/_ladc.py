@@ -316,6 +316,10 @@ def search(searchData={}, year='2017'):
 
 def get(fn=None, outDir='', warnings=True, directory=None):
     '''Gets a file, returns filename, else returns None'''
+    if outDir:
+        p = Path(outDir)
+        if not p.exists():
+            p.mkdir()
     if directory:
         return getEARSFileUNO(fn=fn, outDir=outDir, warnings=warnings, directory=directory)
     if not fn:
