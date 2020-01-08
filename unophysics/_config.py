@@ -2,27 +2,25 @@ from pathlib import Path
 import json
 import collections
 
+
 Server = collections.namedtuple('Server',
     ['address', 'username', 'password'])
 
 __all__ = ['server_mongo_uno', 'server_ftp_uno', 'server_ftp_ull', 'server_api_uno', 'load_credentials']
 
-def load_credentials(cred_fn='unophysics.cred', home=True):
+def load_credentials(cred_fn='unophysics.cred'):
     global server_mongo_uno, server_ftp_uno, server_ftp_ull, server_api_uno
-    creds = {}
 
-    try:
-        if home:
-            fn = next(Path.home().glob(cred_fn))
-        else:
-            fn = next(glob(cred_fn))
-        print(fn)
-        with open(fn) as f:
-            creds = json.load(f)
-    except StopIteration:
+    creds = {}
+    paths = [(Path.home() / cred_fn), Path(cred_fn)]
+
+    for p in paths:
+        if p.exists():
+            with open(p) as f:
+                creds = json.load(f)
+            break
+    if not creds:
         print(f'WARNING --- {cred_fn} file not found')
-    except Exception as e:
-        print(f'WARNING --- {cred_fn} file not available, error:\n\t{e.__repr__()}')
 
     server_mongo_uno = Server(
         address = creds.get('server_mongo_uno', {}).get('address', ''),
