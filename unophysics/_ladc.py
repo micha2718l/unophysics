@@ -187,7 +187,7 @@ class EARS():
     fs = 192000
     fs_time = 32000
 
-    def __init__(self, fn=None, epoch=None, year='2017', norm=False):
+    def __init__(self, fn=None, epoch=None, year=None, norm=False):
         self.data = []
         self.headers = []
         self.timestamps = []
