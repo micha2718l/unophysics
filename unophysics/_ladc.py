@@ -180,7 +180,7 @@ EARS file Classes
 
 
 class EARS():
-    default_fn = r'../data/raw/5234C8C9.021'
+    default_fn = Path('sample_data') / Path('71621DC7.190')
     recN = 512
     headerN = 12
     epochs = {'2015': (2000, 1, 1), '2017': (2015, 10, 27)}
