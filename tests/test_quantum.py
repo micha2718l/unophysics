@@ -25,3 +25,8 @@ class TestPhi:
             assert quantum.phi(n=1.3)
 
         assert str(e.value) == "n must be integer."
+
+    def test_phi_no_args(self):
+        phi = sp.sqrt(2) * sp.sin(sp.pi * self.x)
+        phi_no_args = quantum.phi()
+        assert phi == phi_no_args, "Should be sqrt(2)*sin(pi*x)"
