@@ -10,7 +10,7 @@ class TestPhi:
         phi = quantum.phi(n=1, x=self.x)
         assert phi == phi_1, "Should be sqrt(2)*sin(pi*x)"
 
-    def test_phi_n1(self):
+    def test_phi_n2(self):
         phi_2 = sp.sqrt(2) * sp.sin(2 * sp.pi * self.x)
         phi = quantum.phi(n=2, x=self.x)
         assert phi == phi_2, "Should be sqrt(2)*sin(2*pi*x)"
