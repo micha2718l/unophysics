@@ -9,9 +9,13 @@ class TestEARS:
 
     fn2017 = Path('sample_data') / Path('71621DC7.190')
 
+    def test_EARS_default_file(self):
+        e = ladc.EARS()
+        assert isinstance(e, ladc.EARS), 'Should open sample data without fn input'
+
     def test_EARS_datetime(self):
         e = ladc.EARS(self.fn2017)
-        assert isinstance(e.time_0, datetime.datetime), 'Should be datetime object.'
+        assert isinstance(e.time_0, datetime.datetime), 'Should be datetime object'
 
     def test_EARS_fs_2017(self):
         e = ladc.EARS(self.fn2017)
