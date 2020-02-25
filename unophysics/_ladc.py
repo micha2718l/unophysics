@@ -35,7 +35,7 @@ __all__ = ['EARS', 'getEARSFileUNO', 'getEARSFileUL', 'searchEARS2017',
            'find_by_datetime']
 
 
-class ladcMongoDB():
+class ladcMongoDB():    # pragma: no cover
     
     def __init__(self):
         SERVER_HOST = config.server_mongo_uno.address
@@ -131,7 +131,7 @@ class Stuff(object):
                     }
                     } 
 
-def find(skip=0, use_filter=True, **kwargs):
+def find(skip=0, use_filter=True, **kwargs):    # pragma: no cover
     ''' Find using Mongo object. 
         defaults to use UNO filter for available data in 2017
     '''
@@ -144,7 +144,7 @@ def find(skip=0, use_filter=True, **kwargs):
         d = db.detects_2017.find_one(filt, skip=skip)
         return d
 
-def find_by_datetime(datetime_start, datetime_stop=None, minutes_delta=5, buoys=None):
+def find_by_datetime(datetime_start, datetime_stop=None, minutes_delta=5, buoys=None):    # pragma: no cover
     ''' Find by datetime range, if no stop is given defaults to a 5 minute
         range. buoys takes a list of strings with buoy numbers.
     '''
@@ -246,7 +246,7 @@ class EARS():
         return (datetime.timedelta(seconds=timestampSeconds) +
                 datetime.datetime(*self.epoch))
 
-def getEARSFileUNO(fn=None, outDir='', warnings=False, directory=None):
+def getEARSFileUNO(fn=None, outDir='', warnings=False, directory=None):    # pragma: no cover
     if not fn:
         return None
     try:
@@ -271,7 +271,7 @@ def getEARSFileUNO(fn=None, outDir='', warnings=False, directory=None):
         return None
 
 
-def getEARSFileUL(fn=None, outDir='', warnings=False):
+def getEARSFileUL(fn=None, outDir='', warnings=False):    # pragma: no cover
     if not fn:
         return None
     try:
@@ -301,12 +301,12 @@ def getEARSFileUL(fn=None, outDir='', warnings=False):
             print(f'Problem getting {fn} Error: {str(e)}')
         return None
 
-def searchEARS2017(searchData={}):
+def searchEARS2017(searchData={}):    # pragma: no cover
     searchJson = {k: str(v) for k,v in searchData.items()}
     r = requests.post(config.server_api_uno.address, json=searchJson)
     return r.json()
 
-def search(searchData={}, year='2017'):
+def search(searchData={}, year='2017'):    # pragma: no cover
     ''' Search using requests api. '''
     if year=='2015':
         return searchEARS2015(searchData=searchData)
@@ -314,7 +314,7 @@ def search(searchData={}, year='2017'):
         return searchEARS2017(searchData=searchData)
         
 
-def get(fn=None, outDir='', warnings=True, directory=None):
+def get(fn=None, outDir='', warnings=True, directory=None):    # pragma: no cover
     '''Gets a file, returns filename, else returns None'''
     if outDir:
         p = Path(outDir)
@@ -336,13 +336,13 @@ def get(fn=None, outDir='', warnings=True, directory=None):
             print(f'Problem getting {fn} Error: {str(e)}')
         return None
 
-def memOpen(fn, warnings=True, directory=None):
+def memOpen(fn, warnings=True, directory=None):    # pragma: no cover
     '''Gets file from network and returns EARS object, does not write to storage.'''
     with tempfile.TemporaryDirectory() as tmpdirname:
         fni = get(fn, outDir=tmpdirname, warnings=warnings, directory=directory)
         return EARS(fni)
 
-def create_timeseries(filename=None, skip=None, show_plt=True):
+def create_timeseries(filename=None, skip=None, show_plt=True):    # pragma: no cover
     if filename is None:
         if skip is None:
             detect = find()
@@ -358,7 +358,7 @@ def create_timeseries(filename=None, skip=None, show_plt=True):
         if show_plt == True:
             plt.show()
 
-def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None, downloadname=None): 
+def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, show_plt=True, filename=None, downloadname=None):    # pragma: no cover
     if filename is None:
         if skip is None:
             detect = find()
@@ -390,7 +390,7 @@ def create_spec(skip=None, cmap='nipy_spectral', figsize=(6,4), save_fig=None, s
         if save_fig is None:
             return None
 
-def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0'): 
+def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0'):    # pragma: no cover
     # change skip_start number to get a new set
     # keep number of files square to make plotting below work smoothly
     records = []
@@ -408,7 +408,7 @@ def find_interesting(skip_start=0, number_of_files=9, Type=6, Buoy='13', Disk='0
             records.append(cursor.next())
     return records
 
-def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None, Type=6, Buoy='13', Disk='0'):
+def MATLAB_format(plot=True, show_plt=False, save_plt=True, clip_length=577, number_of_files=9, skip_start=0, directory='data', records=None, Type=6, Buoy='13', Disk='0'):    # pragma: no cover
     save_folder = Path(directory)
     save_folder.mkdir(exist_ok=True)
     if plot:
