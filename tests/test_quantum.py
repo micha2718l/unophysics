@@ -31,3 +31,11 @@ class TestPhi:
         phi = sp.sqrt(2) * sp.sin(sp.pi * x)
         phi_no_args = quantum.phi()
         assert phi == phi_no_args, "Should be sqrt(2)*sin(pi*x)"
+
+class TestH:
+
+    def testH_no_potential(self):
+        hbar= sp.symbols('hbar', real=True)
+        H_no_potential = sp.sqrt(2)*sp.pi**2*hbar**2*sp.sin(sp.pi*x)/2
+        H = quantum.H(quantum.phi(), 0, 1, x)   #TODO: relies on phi to work, make independant
+        assert H == H_no_potential, 'Should be sqrt(2)*pi**2*hbar**2*sin(pi*x)/2'
