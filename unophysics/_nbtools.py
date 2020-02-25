@@ -2,7 +2,7 @@
 import sympy
 from IPython.display import Latex, Markdown, display
 
-__all__ = ['pmath', 'nbprint', 'setup_notebook']
+__all__ = ['pmath', 'nbprint']
 
 
 def nbprint(string):
@@ -19,7 +19,7 @@ def pmath(sym, ret=False, pre='', post='', preM='', postM=''):
         return output
     nbprint(output)
 
-
+'''
 def setup_notebook():
     #global sp, np, pmath, nbprint, plt
     global sympy
@@ -29,7 +29,7 @@ def setup_notebook():
     #import numpy as np
     #import matplotlib.pyplot as plt
     print(dir())
-
+'''
 # def reset_notebook_test1():
 #    global sp, np, pmath, nbprint, norm, plt, ureg
 #     %reset_selective -f "^((?!reset_notebook).)*$"
