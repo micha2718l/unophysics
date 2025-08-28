@@ -3,12 +3,18 @@ import json
 import collections
 
 
-Server = collections.namedtuple('Server',
-    ['address', 'username', 'password'])
+Server = collections.namedtuple("Server", ["address", "username", "password"])
 
-__all__ = ['server_mongo_uno', 'server_ftp_uno', 'server_ftp_ull', 'server_api_uno', 'load_credentials']
+__all__ = [
+    "server_mongo_uno",
+    "server_ftp_uno",
+    "server_ftp_ull",
+    "server_api_uno",
+    "load_credentials",
+]
 
-def load_credentials(cred_fn='unophysics.cred'):
+
+def load_credentials(cred_fn="unophysics.cred"):
     global server_mongo_uno, server_ftp_uno, server_ftp_ull, server_api_uno
 
     creds = {}
@@ -20,30 +26,32 @@ def load_credentials(cred_fn='unophysics.cred'):
                 creds = json.load(f)
             break
     if not creds:
-        print(f'WARNING --- {cred_fn} file not found')
+        pass
+        # print(f"WARNING --- {cred_fn} file not found")
 
     server_mongo_uno = Server(
-        address = creds.get('server_mongo_uno', {}).get('address', ''),
-        username = creds.get('server_mongo_uno', {}).get('username', ''),
-        password = creds.get('server_mongo_uno', {}).get('password', ''),
-        )
+        address=creds.get("server_mongo_uno", {}).get("address", ""),
+        username=creds.get("server_mongo_uno", {}).get("username", ""),
+        password=creds.get("server_mongo_uno", {}).get("password", ""),
+    )
 
     server_ftp_uno = Server(
-        address = creds.get('server_ftp_uno', {}).get('address', ''),
-        username = creds.get('server_ftp_uno', {}).get('username', ''),
-        password = creds.get('server_ftp_uno', {}).get('password', ''),
-        )
+        address=creds.get("server_ftp_uno", {}).get("address", ""),
+        username=creds.get("server_ftp_uno", {}).get("username", ""),
+        password=creds.get("server_ftp_uno", {}).get("password", ""),
+    )
 
     server_ftp_ull = Server(
-        address = creds.get('server_ftp_ull', {}).get('address', ''),
-        username = creds.get('server_ftp_ull', {}).get('username', ''),
-        password = creds.get('server_ftp_ull', {}).get('password', ''),
-        )
+        address=creds.get("server_ftp_ull", {}).get("address", ""),
+        username=creds.get("server_ftp_ull", {}).get("username", ""),
+        password=creds.get("server_ftp_ull", {}).get("password", ""),
+    )
 
     server_api_uno = Server(
-        address = creds.get('server_api_uno', {}).get('address', ''),
-        username = creds.get('server_api_uno', {}).get('username', ''),
-        password = creds.get('server_api_uno', {}).get('password', ''),
-        )
+        address=creds.get("server_api_uno", {}).get("address", ""),
+        username=creds.get("server_api_uno", {}).get("username", ""),
+        password=creds.get("server_api_uno", {}).get("password", ""),
+    )
+
 
 load_credentials()
