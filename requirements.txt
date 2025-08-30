@@ -1,6 +1,16 @@
+
 requests
 sshtunnel
 pymongo
 mpmath
 sympy
 jupyter
+numpy
+scipy
+matplotlib
+sounddevice
+pyqtgraph
+PySide6
+PyWavelets
+plotly
+ipywidgets

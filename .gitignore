@@ -1,3 +1,46 @@
+# Node and frontend
+node_modules/
+audino/frontend/node_modules/
+audino/frontend/build/
+audino/frontend/dist/
+audino/frontend/.env
+
+# Audino backend
+audino/backend/data/
+audino/backend/venv/
+audino/backend/__pycache__/
+audino/backend/*.pyc
+
+# Large/binary/data files
+*.wav
+*.flac
+*.ogg
+*.dat
+*.bin
+*.190
+*.010
+*.tmp
+*.mat
+*.jpg
+*.png
+*.pdf
+*.zip
+*.tar.gz
+*.tar
+*.h5
+*.npy
+*.npz
+*.csv
+*.tsv
+*.bak
+*.swp
+*.swo
+*.sqlite
+*.db
+*.log
+
+# Test output
+test_dir/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

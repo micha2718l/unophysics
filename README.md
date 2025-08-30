@@ -1,43 +1,95 @@
-[![Build Status](https://travis-ci.org/micha2718l/unophysics.svg?branch=master)](https://travis-ci.org/micha2718l/unophysics)
 
 # UNO Physics Tools
--------------------
-- Python tools collected from data analysis projects at the University of New Orleans.
-- Some of these will be useful in general, some will be specific to our internal systems.
-  - TODO: seperate the generally useful parts from the specific parts.
-- TODO: add in proper badges
+
+UNO Physics Tools is a Python package combining quantum mechanics utilities, wavelet-based signal processing, Jupyter notebook helpers, and specialized tools for reading and analyzing LADC GEMM audio data (including a GUI for exploration). Developed at the University of New Orleans.
 
 ## Installation
 ---------------
-- Recommended to use a virtualenv. `python -m virtualenv *name of directory to put venv*`
-- To install:
-  - Either clone this repo then install:
-    - `git clone https://github.com/micha2718l/unophysics.git`
-    - `cd unophysics`
-    - `pip install .`
-  - Or use `pip`
-    - `pip install unophysics`
+It is recommended to use a virtual environment:
+```sh
+python -m venv venv
+source venv/bin/activate
+```
+To install:
+- Clone this repo and install:
+  ```sh
+  git clone https://github.com/micha2718l/unophysics.git
+  cd unophysics
+  pip install .
+  ```
+- Or install directly with pip:
+  ```sh
+  pip install unophysics
+  ```
 
-## Tools for physics from UNO.
-------------------------------
-- Free software: MIT license
-- Documentation: TODO
+To use LADC data access, you must provide a `unophysics.cred` file with server credentials (see `unophysics/_config.py` for details).
 
 ## Features
 --------
-- Wavelet noise cleaning function
-- Various quantum mechanics formulas implemented
-- Jupyter Notebook helper functions for displaying math
-- Can load LADC GEMM data, for the data access functions to work, credentials for the servers are needed. Contact us if that is desired. 
-- Can work with the LADC GEMM data to display spectrographic information
-- Data on various marine mammal species built into the library (currently has Bryde's whale information, in progress to fill in with Fin whale data).
-- TODO: Examples
+- **Quantum Mechanics Utilities**: Symbolic computation of Hamiltonians, energies, and wavefunctions using SymPy.
+- **Wavelet Signal Processing**: Denoising and cleaning of signals with PyWavelets and NumPy.
+- **Jupyter Notebook Helpers**: Functions for pretty-printing math and Markdown in notebooks.
+- **LADC GEMM Audio Tools**:
+  - Read, process, and visualize LADC GEMM audio files.
+  - Access and search remote data via MongoDB and FTP (requires credentials).
+  - GUI for interactive exploration (`python -m unophysics` launches a Tkinter-based app).
+- **Marine Mammal Data**: Built-in reference data for Bryde’s whale calls and frequency ranges.
+
+## Usage Examples
+-----------------
+```python
+# Quantum mechanics: compute a wavefunction
+from unophysics import quantum
+psi = quantum.phi(n=2, a=1)
+
+# Wavelet denoising
+from unophysics import wavefuncs
+cleaned = wavefuncs.wave_clean(data)
+
+# Notebook pretty-printing
+from unophysics import nbtools
+nbtools.pmath(psi)
+
+# LADC audio file: load and plot
+from unophysics import ladc
+ears = ladc.EARS('sample_data/71621DC7.190')
+import matplotlib.pyplot as plt
+plt.plot(ears.data)
+plt.show()
+```
+
+To launch the GUI for LADC file exploration:
+```sh
+python -m unophysics
+```
+
+## Directory Structure
+---------------------
+- `unophysics/`: Main package code (quantum, wavelet, notebook, and LADC tools)
+- `sample_data/`: Example LADC audio file
+- `tests/`: Unit tests for each module
+- `docs/`: Sphinx documentation sources
+
+## License
+-------
+Free software: MIT license
+
+## Contributing and Testing
+---------------------------
+See `CONTRIBUTING.md` for guidelines.
+
+To run tests:
+```sh
+pytest
+# or
+tox
+```
 
 ## Credits
 -------
-- Most of this work has been done by various students and professors at the University of New Orleans Physics department.
-- Special thanks to the [LADC GEMM Consortium](http://www.ladcgemm.org/) for data to work with and inspire us.
-- This package was created with:
-  - [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-  - [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
-  - relies heavily on numpy, PyWavelets, scipy, etc...
+Most of this work has been done by various students and professors at the University of New Orleans Physics department.
+Special thanks to the [LADC GEMM Consortium](http://www.ladcgemm.org/) for data to work with and inspire us.
+This package was created with:
+- [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
+- [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
+- Relies heavily on numpy, PyWavelets, scipy, etc.
