@@ -1,0 +1,2 @@
+band_low,band_high,window_ms,n_std,min_width_ms,max_width_ms,num_peaks,mean_width_ms,std_width_ms,first_10_times
+60000,100000,3,6,1,100,0,0,0,[]
